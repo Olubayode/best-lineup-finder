@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import itertools
@@ -74,12 +73,12 @@ elif page == "🧢 Manual Lineup Selector":
     elif len(selected_players) > 9:
         st.error("Too many players selected. Please choose exactly 9.")
     else:
-        selected_df = df[df["Player"].isin(selected_players)].sort_values("Estimated Runs", ascending=False)
+        selected_df = df[df["Player"].isin(selected_players)].sort_values("Estimated Runs", ascending=False).reset_index(drop=True)
         total_estimated_runs = selected_df["Estimated Runs"].sum()
 
         st.success(f"✅ Total Estimated Runs for Selected Lineup: {total_estimated_runs:.3f}")
 
-        st.dataframe(selected_df[["Player", "OBP", "SLG", "Estimated Runs"]].reset_index(drop=True))
+        st.dataframe(selected_df[["Player", "OBP", "SLG", "Estimated Runs"]])
 
         fig = go.Figure(go.Bar(
             x=selected_df["Player"],
@@ -90,3 +89,10 @@ elif page == "🧢 Manual Lineup Selector":
         ))
         fig.update_layout(title="Run Contribution by Player", xaxis_title="Player", yaxis_title="Estimated Runs")
         st.plotly_chart(fig)
+
+        st.markdown("### 🧾 Visual Lineup Card")
+        for i, row in selected_df.iterrows():
+            with st.container():
+                st.markdown(f"**{i+1}. {row['Player']}**")
+                st.markdown(f"- OBP: `{row['OBP']:.3f}`  |  SLG: `{row['SLG']:.3f}`  |  Estimated Runs: `{row['Estimated Runs']:.3f}`")
+                st.markdown("---")
